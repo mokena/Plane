@@ -1,0 +1,13 @@
+cocos2d/
+bin/
+proj.android/
+proj.android-studio/
+proj.ios_mac/
+proj.linux/
+proj.win8.1-universal/
+proj.win10/
+proj.win32/
+MemoryCard/
+.MemoryCard.zip
+.cocos-project.json
+CMakeLists.txt
