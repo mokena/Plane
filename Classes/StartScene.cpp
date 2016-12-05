@@ -39,12 +39,22 @@ bool StartScene::init()
     // add the sprite as a child to this layer
     this->addChild(sprite, 0);
 
-	Label* startGameBtn = Label::createWithSystemFont("开始游戏", "Arial", 24);
-	startGameBtn->setString("开始游戏");
-	startGameBtn->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y - 30));
-	this->addChild(startGameBtn);
+	auto *chnStrings = Dictionary::createWithContentsOfFile("res.xml");
+	const char *startGmStr = ((String*)chnStrings->objectForKey("start_game"))->getCString();
+	Label* startGameLbl = Label::createWithSystemFont(startGmStr, "Arial", 24);	
+
+	MenuItem* startGame = MenuItemLabel::create(startGameLbl, this, menu_selector(StartScene::startMenuHandler));
+
+	Menu* menu = Menu::create(startGame, NULL);
+
+	this->addChild(menu);
     
     return true;
+}
+
+void StartScene::startMenuHandler(Ref* ref) {
+	Scene* playScene = PlayScene::createScene();
+	Director::getInstance()->replaceScene(playScene);
 }
 
 

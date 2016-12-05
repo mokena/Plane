@@ -2,6 +2,9 @@
 #define __HELLOWORLD_SCENE_H__
 
 #include "cocos2d.h"
+#include "PlayScene.h"
+
+USING_NS_CC;
 
 class StartScene : public cocos2d::Layer
 {
@@ -12,6 +15,8 @@ public:
     
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
+
+	void startMenuHandler(Ref* ref);
     
     // implement the "static create()" method manually
     CREATE_FUNC(StartScene);
