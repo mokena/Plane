@@ -32,29 +32,43 @@ bool StartScene::init()
 
     // add "background" splash screen"
     auto sprite = Sprite::create("bg.png");
-
-    // position the sprite on the center of the screen
     sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-
-    // add the sprite as a child to this layer
     this->addChild(sprite, 0);
 
+	// add start menu 
 	auto *chnStrings = Dictionary::createWithContentsOfFile("res.xml");
 	const char *startGmStr = ((String*)chnStrings->objectForKey("start_game"))->getCString();
 	Label* startGameLbl = Label::createWithSystemFont(startGmStr, "Arial", 24);	
 
 	MenuItem* startGame = MenuItemLabel::create(startGameLbl, this, menu_selector(StartScene::startMenuHandler));
-
+	startGame->setContentSize(startGameLbl->getContentSize());
 	Menu* menu = Menu::create(startGame, NULL);
-
+	menu->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height*0.3f + origin.y));
 	this->addChild(menu);
+
+	// add animation
+	Animation* animation = Animation::create();
+	char str[20] = { 0 };
+	for (int i = 1; i < 5; i++) {
+		sprintf(str, "start%d.png", i);
+		animation->addSpriteFrameWithFileName(str);
+	}
+	animation->setDelayPerUnit(0.2f);
+	animation->setLoops(-1);
+	Animate* animate = Animate::create(animation);
+	Sprite* startAnim = Sprite::create("start1.png");
+	startAnim->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+	addChild(startAnim);
+	startAnim->runAction(animate);
     
     return true;
 }
 
 void StartScene::startMenuHandler(Ref* ref) {
 	Scene* playScene = PlayScene::createScene();
-	Director::getInstance()->replaceScene(playScene);
+	auto reScene =CCTransitionFadeTR::create(0.5f, playScene);
+	
+	Director::getInstance()->replaceScene(reScene);
 }
 
 
