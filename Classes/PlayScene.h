@@ -1,5 +1,6 @@
 #pragma once
 #include "cocos2d.h"
+#include "EnemyBase.h"
 
 USING_NS_CC;
 
@@ -14,6 +15,7 @@ public:
 
 	virtual bool init();
 	void initHeroPlane(int index);
+	void addEnemy();
 
 	void update(float dt);
 

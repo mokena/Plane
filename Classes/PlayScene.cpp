@@ -30,7 +30,23 @@ bool PlayScene::init() {
 	// add hero
 	initHeroPlane(1);
 
+	// control the hero
+	auto listener = EventListenerTouchOneByOne::create();
+	listener->onTouchBegan = [&](Touch* t, Event* e) {
+		Vec2 pos = t->getLocation();
+		if (hero->getBoundingBox().containsPoint(pos)) {
+			return true;
+		}
+		return false;
+	};
+	listener->onTouchMoved = [&](Touch* t, Event* e) {
+		hero->setPosition(t->getLocation());
+	};
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
+
 	scheduleUpdate();
+
+	schedule(sel_schedule(PlayScene::addEnemy))
 
 	return true;
 }
@@ -52,6 +68,13 @@ void PlayScene::initHeroPlane(int index) {
 	hero->runAction(anim);
 }
 
+void PlayScene::addEnemy() {
+	int index = CCRANDOM_0_1() * 10;
+	index = index > 6 ? 1 : 2;
+	auto enemy = EnemyBase::create();
+	enemy->initEnemy(index);
+	addChild(enemy);
+}
 
 void PlayScene::update(float dt) {
 
