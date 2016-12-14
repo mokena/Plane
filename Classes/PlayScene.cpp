@@ -46,7 +46,11 @@ bool PlayScene::init() {
 
 	scheduleUpdate();
 
-	schedule(sel_schedule(PlayScene::addEnemy))
+	// add enemies
+	schedule(schedule_selector(PlayScene::addEnemy), 0.5f);
+
+	// add hero bullet
+	schedule(schedule_selector(PlayScene::addHeroBullet), 0.2f);
 
 	return true;
 }
@@ -68,12 +72,21 @@ void PlayScene::initHeroPlane(int index) {
 	hero->runAction(anim);
 }
 
-void PlayScene::addEnemy() {
+void PlayScene::addEnemy(float dt) {
 	int index = CCRANDOM_0_1() * 10;
-	index = index > 6 ? 1 : 2;
+	index = index > 6 ? 2 : 1;
 	auto enemy = EnemyBase::create();
 	enemy->initEnemy(index);
 	addChild(enemy);
+}
+
+void PlayScene::addHeroBullet(float dt)
+{
+	BulletBase* bullet = BulletBase::create();
+	bullet->initWithName("bullet1.png");
+	addChild(bullet);
+
+	bullet->setPosition(Vec2(hero->getPositionX(), hero->getPositionY() + hero->getContentSize().height));
 }
 
 void PlayScene::update(float dt) {
