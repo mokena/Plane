@@ -1,4 +1,5 @@
 #include "BulletBase.h"
+#include "ManagerBase.h"
 
 void BulletBase::onEnter()
 {
@@ -26,5 +27,6 @@ void BulletBase::update(float dt)
 
 	if (posy > Director::getInstance()->getVisibleSize().height + getContentSize().height / 2) {
 		removeFromParentAndCleanup(true);
+		ManagerBase::getInstance()->removeBullet(this);
 	}
 }

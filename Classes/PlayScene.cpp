@@ -52,6 +52,9 @@ bool PlayScene::init() {
 	// add hero bullet
 	schedule(schedule_selector(PlayScene::addHeroBullet), 0.2f);
 
+	// is collided
+	schedule(schedule_selector(PlayScene::collide), 0.2f);
+
 	return true;
 }
 
@@ -78,6 +81,7 @@ void PlayScene::addEnemy(float dt) {
 	auto enemy = EnemyBase::create();
 	enemy->initEnemy(index);
 	addChild(enemy);
+	ManagerBase::getInstance()->addEnemy(enemy);
 }
 
 void PlayScene::addHeroBullet(float dt)
@@ -85,11 +89,69 @@ void PlayScene::addHeroBullet(float dt)
 	BulletBase* bullet = BulletBase::create();
 	bullet->initWithName("bullet1.png");
 	addChild(bullet);
+	ManagerBase::getInstance()->addBullet(bullet);
 
 	bullet->setPosition(Vec2(hero->getPositionX(), hero->getPositionY() + hero->getContentSize().height));
 }
 
+void PlayScene::collide(float dt)
+{
+	auto enemies = ManagerBase::getInstance()->getEnemies();
+	auto bullets = ManagerBase::getInstance()->getBullets();
+	for (int i = enemies->size() - 1; i >= 0; i--) {
+		auto enemy = enemies->at(i);
+		if (enemy->getHp() <= 0) { continue; }
+		for (int j = 0; j < bullets->size(); j++) {
+			auto bullet = bullets->at(j);
+			if (enemy->getBoundingBox().containsPoint(bullet->getPosition())) {
+				enemy->setHp(enemy->getHp() - 1);
+				if (enemy->getHp() <= 0) {
+					enemy->death();
+				}
+				bullet->removeFromParentAndCleanup(true);
+				ManagerBase::getInstance()->removeBullet(bullet);
+			}
+		}
+	}
+
+	for (int i = enemies->size() - 1; i >= 0; i--) {
+		auto enemy = enemies->at(i);
+		if (enemy->getHp() <= 0) { continue; }
+		if (hero->getBoundingBox().containsPoint(enemy->getPosition())) {
+			enemy->setHp(enemy->getHp() - 1);
+			if (enemy->getHp() <= 0) {
+				enemy->death();
+			}
+			heroDied();
+		}
+	}
+}
+
+void PlayScene::heroDied()
+{
+	unschedule(schedule_selector(PlayScene::addHeroBullet));
+	unschedule(schedule_selector(PlayScene::collide));
+
+	Animation* animation = Animation::create();
+	char str[20] = { 0 };
+	for (int i = 1; i <= 4; i++) {
+		sprintf(str, "plane/b%d.png", i);
+		animation->addSpriteFrameWithFileName(str);
+	}
+	animation->setDelayPerUnit(0.3f);
+	animation->setLoops(1);
+	hero->runAction(Sequence::create(Animate::create(animation), 
+		CallFunc::create(CC_CALLBACK_0(PlayScene::heroDiedActionDown, this)), NULL));
+}
+
+void PlayScene::heroDiedActionDown()
+{
+	unschedule(schedule_selector(PlayScene::addEnemy));
+}
+
 void PlayScene::update(float dt) {
+	bg1->setPositionY(bg1->getPositionY() - 5);
+	bg2->setPositionY(bg2->getPositionY() - 5);
 
 	if (bg1->getPositionY() < -visibleSize.height / 2) {
 		bg1->setPositionY(visibleSize.height / 2 + visibleSize.height);
@@ -98,7 +160,4 @@ void PlayScene::update(float dt) {
 	if (bg2->getPositionY() < -visibleSize.height / 2) {
 		bg2->setPositionY(visibleSize.height / 2 + visibleSize.height);
 	}
-
-	bg1->setPositionY(bg1->getPositionY() - 5);
-	bg2->setPositionY(bg2->getPositionY() - 5);
 }

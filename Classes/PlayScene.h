@@ -2,6 +2,7 @@
 #include "cocos2d.h"
 #include "EnemyBase.h"
 #include "BulletBase.h"
+#include "ManagerBase.h"
 
 USING_NS_CC;
 
@@ -18,7 +19,10 @@ public:
 	void initHeroPlane(int index);
 	void addEnemy(float dt);
 	void addHeroBullet(float dt);
-
+	void collide(float dt);
+	void heroDied();
+	void heroDiedActionDown();
+	
 	void update(float dt);
 
 	CREATE_FUNC(PlayScene);
