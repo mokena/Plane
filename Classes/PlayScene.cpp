@@ -55,6 +55,9 @@ bool PlayScene::init() {
 	// is collided
 	schedule(schedule_selector(PlayScene::collide), 0.2f);
 
+	// add support 
+	schedule(schedule_selector(PlayScene::addSupport), 2.0f);
+
 	return true;
 }
 
@@ -96,6 +99,7 @@ void PlayScene::addHeroBullet(float dt)
 
 void PlayScene::collide(float dt)
 {
+	// enemies and bullets
 	auto enemies = ManagerBase::getInstance()->getEnemies();
 	auto bullets = ManagerBase::getInstance()->getBullets();
 	for (int i = enemies->size() - 1; i >= 0; i--) {
@@ -114,6 +118,7 @@ void PlayScene::collide(float dt)
 		}
 	}
 
+	// hero and enemies
 	for (int i = enemies->size() - 1; i >= 0; i--) {
 		auto enemy = enemies->at(i);
 		if (enemy->getHp() <= 0) { continue; }
@@ -123,6 +128,13 @@ void PlayScene::collide(float dt)
 				enemy->death();
 			}
 			heroDied();
+		}
+	}
+
+	// hero and support
+	if (support != nullptr) {
+		if (hero->getBoundingBox().containsPoint(support->getPosition())) {
+			changeBullet();
 		}
 	}
 }
@@ -147,6 +159,29 @@ void PlayScene::heroDied()
 void PlayScene::heroDiedActionDown()
 {
 	unschedule(schedule_selector(PlayScene::addEnemy));
+}
+
+void PlayScene::addSupport(float dt)
+{
+	support = Support::create();
+	support->initWithIndex(CCRANDOM_0_1() * 2 + 1);
+	addChild(support);
+}
+
+void PlayScene::changeBullet() {
+	unschedule(schedule_selector(PlayScene::addHeroBullet));
+	schedule(schedule_selector(PlayScene::addSupportedBullet), 0.2, 50, 0);
+	schedule(schedule_selector(PlayScene::addHeroBullet), 0.2f, CC_REPEAT_FOREVER, 10);
+}
+
+void PlayScene::addSupportedBullet(float dt) {
+	BulletBase* bullet = BulletBase::create();
+	int index = support->getIndex()==2?2:1;
+	bullet->initWithName(StringUtils::format("plane/bullet_suspand%d.png", index).c_str());
+	addChild(bullet);
+	ManagerBase::getInstance()->addBullet(bullet);
+
+	bullet->setPosition(Vec2(hero->getPositionX(), hero->getPositionY() + hero->getContentSize().height));
 }
 
 void PlayScene::update(float dt) {

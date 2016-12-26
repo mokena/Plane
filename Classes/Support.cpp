@@ -18,8 +18,9 @@ bool Support::init()
 
 void Support::initWithIndex(int index)
 {
+	this->index = index;
 	char file[50] = {0}; 
-	sprintf(file, "plane\bullet_suspand%d.png", index);
+	sprintf(file, "plane/support%d.png", index);
 
 	initWithFile(file);
 

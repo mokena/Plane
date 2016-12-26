@@ -5,6 +5,8 @@
 USING_NS_CC;
 
 class Support : public Sprite {
+protected:
+	int index;
 
 public:
 	Support();
@@ -13,6 +15,8 @@ public:
 	virtual bool init();
 
 	void initWithIndex(int index);
+
+	int getIndex() { return index; };
 
 	CREATE_FUNC(Support);
 };

@@ -3,6 +3,7 @@
 #include "EnemyBase.h"
 #include "BulletBase.h"
 #include "ManagerBase.h"
+#include "Support.h"
 
 USING_NS_CC;
 
@@ -11,6 +12,7 @@ protected:
 	Sprite* bg1, *bg2;
 	Size visibleSize;
 	Sprite* hero;
+	Support* support;
 
 public:
 	static Scene* createScene();
@@ -22,6 +24,9 @@ public:
 	void collide(float dt);
 	void heroDied();
 	void heroDiedActionDown();
+	void addSupport(float dt);
+	void changeBullet();
+	void addSupportedBullet(float dt);
 	
 	void update(float dt);
 
