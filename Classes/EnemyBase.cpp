@@ -19,7 +19,7 @@ void EnemyBase::death() {
 		sprintf(str, "plane/enemy1_down%d.png", i);
 		animation->addSpriteFrameWithFileName(str);
 	}
-	animation->setDelayPerUnit(0.3f);
+	animation->setDelayPerUnit(0.1f);
 	Animate* anim = Animate::create(animation);
 	this->runAction(Sequence::create(anim, RemoveSelf::create(), 
 		CallFunc::create(CC_CALLBACK_0(EnemyBase::removeFromList, this)), NULL));

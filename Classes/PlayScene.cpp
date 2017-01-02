@@ -107,13 +107,15 @@ void PlayScene::collide(float dt)
 		if (enemy->getHp() <= 0) { continue; }
 		for (int j = 0; j < bullets->size(); j++) {
 			auto bullet = bullets->at(j);
-			if (enemy->getBoundingBox().containsPoint(bullet->getPosition())) {
+			auto enemyBox = enemy->getBoundingBox();
+			auto bulletBox = bullet->getBoundingBox();
+			if (rectCross(enemyBox, bulletBox)) {
+				bullet->removeFromParentAndCleanup(true);
+				ManagerBase::getInstance()->removeBullet(bullet);
 				enemy->setHp(enemy->getHp() - 1);
 				if (enemy->getHp() <= 0) {
 					enemy->death();
 				}
-				bullet->removeFromParentAndCleanup(true);
-				ManagerBase::getInstance()->removeBullet(bullet);
 			}
 		}
 	}
@@ -122,7 +124,9 @@ void PlayScene::collide(float dt)
 	for (int i = enemies->size() - 1; i >= 0; i--) {
 		auto enemy = enemies->at(i);
 		if (enemy->getHp() <= 0) { continue; }
-		if (hero->getBoundingBox().containsPoint(enemy->getPosition())) {
+		auto heroBox = hero->getBoundingBox();
+		auto enemyBox = enemy->getBoundingBox();
+		if (rectCross(heroBox, enemyBox)) {
 			enemy->setHp(enemy->getHp() - 1);
 			if (enemy->getHp() <= 0) {
 				enemy->death();
@@ -177,11 +181,34 @@ void PlayScene::changeBullet() {
 void PlayScene::addSupportedBullet(float dt) {
 	BulletBase* bullet = BulletBase::create();
 	int index = support->getIndex()==2?2:1;
-	bullet->initWithName(StringUtils::format("plane/bullet_suspand%d.png", index).c_str());
+	bullet->initWithName(StringUtils::format("bullet_suspand%d.png", index).c_str());
 	addChild(bullet);
 	ManagerBase::getInstance()->addBullet(bullet);
 
 	bullet->setPosition(Vec2(hero->getPositionX(), hero->getPositionY() + hero->getContentSize().height));
+}
+
+bool PlayScene::rectCross(Rect r1, Rect r2)
+{
+	float minr1x = r1.getMinX();
+	float minr2x = r2.getMinX();
+	float minx = minr1x > minr2x ? minr1x : minr2x;
+
+	float minr1y = r1.getMinY();
+	float minr2y = r2.getMinY();
+	float miny = minr1y > minr2y ? minr1y : minr2y;
+
+	float maxr1x = r1.getMaxX();
+	float maxr2x = r2.getMaxX();
+	float maxx = maxr1x < maxr2x ? maxr1x : maxr2x;
+
+	float maxr1y = r1.getMaxY();
+	float maxr2y = r2.getMaxY();
+	float maxy = maxr1y < maxr2y ? maxr1y : maxr2y;
+
+	if(minx > maxx || miny > maxy)
+		return false;
+	else return true;
 }
 
 void PlayScene::update(float dt) {

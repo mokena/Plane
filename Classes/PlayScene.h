@@ -27,6 +27,7 @@ public:
 	void addSupport(float dt);
 	void changeBullet();
 	void addSupportedBullet(float dt);
+	bool rectCross(Rect r1, Rect r2);
 	
 	void update(float dt);
 
