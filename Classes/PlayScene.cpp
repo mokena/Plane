@@ -27,6 +27,19 @@ bool PlayScene::init() {
 	bg2->setPosition(Vec2(visibleSize.width / 2, visibleSize.height + visibleSize.height / 2));
 	addChild(bg2);
 
+	// suspend menu
+	auto *chnStr = Dictionary::createWithContentsOfFile("res.xml");
+	const char* suspendStr = ((String*)chnStr->objectForKey("suspend_game"))->getCString();
+	Label* suspendLbl = Label::create();
+	suspendLbl->setString(suspendStr);
+	suspendLbl->setSystemFontSize(30);
+	MenuItemLabel* menuItem = MenuItemLabel::create(suspendLbl,
+		CC_CALLBACK_1(PlayScene::suspend, this)
+	Menu* menu = Menu::create(menuItem, nullptr);
+	menu->setPosition(ccp(visibleSize.width - menuItem->getContentSize().width,
+		visibleSize.height - menuItem->getContentSize().height));
+	addChild(menu);
+
 	// add hero
 	initHeroPlane(1);
 
@@ -209,6 +222,18 @@ bool PlayScene::rectCross(Rect r1, Rect r2)
 	if(minx > maxx || miny > maxy)
 		return false;
 	else return true;
+}
+
+void PlayScene::suspend(Ref * ref)
+{
+	unscheduleUpdate();
+	CCTextureCache::getInstance()->removeUnusedTextures();
+	auto size = Director::getInstance()->getWinSize();
+	auto texture = RenderTexture::create(size.width, size.height);
+	texture->begin();
+	Director::getInstance()->getRunningScene()->visit();
+	texture->end();
+
 }
 
 void PlayScene::update(float dt) {
