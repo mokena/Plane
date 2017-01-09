@@ -13,7 +13,14 @@ protected:
 	Sprite* bg1, *bg2;
 	Size visibleSize;
 	Sprite* hero;
+	Label* bestScoreLabel;
+	Label* scoreLabel;
 	Support* support;
+	int score;
+	Dictionary *chnStr;
+
+	const static String SCORE;
+	const static String BEST_SCORE;
 
 public:
 	static Scene* createScene();

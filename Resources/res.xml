@@ -6,5 +6,11 @@
 	<string>暂停</string>
 	
 	<key>resume</key>
-	<string>恢复</string>
+	<string>回到游戏</string>
+	
+	<key>score</key>
+	<string>当前分数</string>
+	
+	<key>best_score</key>
+	<string>最高分数</string>
 </dict>  

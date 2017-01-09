@@ -1,5 +1,8 @@
 #include "PlayScene.h"
 
+const String PlayScene::SCORE = "score";
+const String PlayScene::BEST_SCORE = "best_score";
+
 Scene* PlayScene::createScene() {
 	Scene* scene = Scene::create();
 
@@ -15,6 +18,7 @@ bool PlayScene::init() {
 	}
 
 	visibleSize = Director::getInstance()->getVisibleSize();
+	score = 0;
 
 	// running background
 	bg1 = Sprite::create("bgs.png");
@@ -28,7 +32,7 @@ bool PlayScene::init() {
 	addChild(bg2);
 
 	// suspend menu
-	auto *chnStr = Dictionary::createWithContentsOfFile("res.xml");
+	chnStr = Dictionary::createWithContentsOfFile("res.xml");
 	const char* suspendStr = ((String*)chnStr->objectForKey("suspend_game"))->getCString();
 	Label* suspendLbl = Label::create();
 	suspendLbl->setString(suspendStr);
@@ -39,6 +43,22 @@ bool PlayScene::init() {
 	menu->setPosition(ccp(visibleSize.width - menuItem->getContentSize().width,
 		visibleSize.height - menuItem->getContentSize().height));
 	addChild(menu);
+
+	// score labels
+	int best = UserDefault::getInstance()->getIntegerForKey(PlayScene::BEST_SCORE.getCString());
+	const char* bestScoreStr = StringUtils::format("%s: %d",
+		((String*)chnStr->objectForKey("best_score"))->getCString(), best).c_str();
+	bestScoreLabel = Label::create();
+	bestScoreLabel->setString(bestScoreStr);
+	bestScoreLabel->setPosition(ccp(0, visibleSize.height - 5));
+	addChild(bestScoreLabel);
+
+	const char* scoreStr = StringUtils::format("%s: %d",
+		((String*)chnStr->objectForKey("score"))->getCString(), score).c_str();
+	scoreLabel = Label::create();
+	scoreLabel->setString(scoreStr);
+	scoreLabel->setPosition(ccp(0, bestScoreLabel->getPositionY() - 5));
+	addChild(scoreLabel);
 
 	// add hero
 	initHeroPlane(1);
@@ -129,6 +149,10 @@ void PlayScene::collide(float dt)
 				if (enemy->getHp() <= 0) {
 					enemy->death();
 				}
+				score += 10;
+				const char* scoreStr = StringUtils::format("%s: %d",
+					((String*)chnStr->objectForKey("score"))->getCString(), score).c_str();
+				scoreLabel->setString(scoreStr);
 			}
 		}
 	}
@@ -176,6 +200,11 @@ void PlayScene::heroDied()
 void PlayScene::heroDiedActionDown()
 {
 	unschedule(schedule_selector(PlayScene::addEnemy));
+	UserDefault::getInstance()->setIntegerForKey(PlayScene::SCORE.getCString(), score);
+	int best = UserDefault::getInstance()->getIntegerForKey(PlayScene::BEST_SCORE.getCString());
+	if (best < score) {
+		UserDefault::getInstance()->setIntegerForKey(PlayScene::BEST_SCORE.getCString(), score);
+	}
 }
 
 void PlayScene::addSupport(float dt)
