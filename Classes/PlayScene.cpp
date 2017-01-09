@@ -34,7 +34,7 @@ bool PlayScene::init() {
 	suspendLbl->setString(suspendStr);
 	suspendLbl->setSystemFontSize(30);
 	MenuItemLabel* menuItem = MenuItemLabel::create(suspendLbl,
-		CC_CALLBACK_1(PlayScene::suspend, this)
+		CC_CALLBACK_1(PlayScene::suspend, this));
 	Menu* menu = Menu::create(menuItem, nullptr);
 	menu->setPosition(ccp(visibleSize.width - menuItem->getContentSize().width,
 		visibleSize.height - menuItem->getContentSize().height));
@@ -227,13 +227,19 @@ bool PlayScene::rectCross(Rect r1, Rect r2)
 void PlayScene::suspend(Ref * ref)
 {
 	unscheduleUpdate();
-	CCTextureCache::getInstance()->removeUnusedTextures();
-	auto size = Director::getInstance()->getWinSize();
-	auto texture = RenderTexture::create(size.width, size.height);
-	texture->begin();
-	Director::getInstance()->getRunningScene()->visit();
-	texture->end();
 
+	utils::captureScreen(CC_CALLBACK_2(PlayScene::capture, this), "suspend.png");
+
+}
+
+void PlayScene::capture(bool succeed, const std::string& outputFile)
+{
+	if (succeed) {
+		Scene* scene = Scene::create();
+		Layer* suspendLayer = SuspendLayer::create();
+		scene->addChild(suspendLayer);
+		Director::getInstance()->pushScene(scene);
+	}
 }
 
 void PlayScene::update(float dt) {

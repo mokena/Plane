@@ -4,4 +4,7 @@
 	
 	<key>suspend_game</key>
 	<string>暂停</string>
+	
+	<key>resume</key>
+	<string>恢复</string>
 </dict>  

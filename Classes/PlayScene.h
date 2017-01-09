@@ -4,6 +4,7 @@
 #include "BulletBase.h"
 #include "ManagerBase.h"
 #include "Support.h"
+#include "SuspendLayer.h"
 
 USING_NS_CC;
 
@@ -21,14 +22,20 @@ public:
 	void initHeroPlane(int index);
 	void addEnemy(float dt);
 	void addHeroBullet(float dt);
+	
 	void collide(float dt);
+	
 	void heroDied();
 	void heroDiedActionDown();
+	
 	void addSupport(float dt);
 	void changeBullet();
 	void addSupportedBullet(float dt);
+	
 	bool rectCross(Rect r1, Rect r2);
+
 	void suspend(Ref* ref);
+	void capture(bool succeed, const std::string& outputFile);
 	
 	void update(float dt);
 
