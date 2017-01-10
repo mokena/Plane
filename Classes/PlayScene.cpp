@@ -46,17 +46,23 @@ bool PlayScene::init() {
 
 	// score labels
 	int best = UserDefault::getInstance()->getIntegerForKey(PlayScene::BEST_SCORE.getCString());
-	const char* bestScoreStr = StringUtils::format("%s: %d",
-		((String*)chnStr->objectForKey("best_score"))->getCString(), best).c_str();
+	const char* bestChn = ((String*)chnStr->objectForKey("best_score"))->getCString();
+	std::string tempBest = StringUtils::format("%s: %d", bestChn, best);
+	const char* bestScoreStr = tempBest.c_str();
 	bestScoreLabel = Label::create();
 	bestScoreLabel->setString(bestScoreStr);
+	bestScoreLabel->setSystemFontSize(25);
+	bestScoreLabel->setAnchorPoint(ccp(0, 0));
 	bestScoreLabel->setPosition(ccp(0, visibleSize.height - 5));
 	addChild(bestScoreLabel);
 
-	const char* scoreStr = StringUtils::format("%s: %d",
-		((String*)chnStr->objectForKey("score"))->getCString(), score).c_str();
+	const char* scoreChn = ((String*)chnStr->objectForKey("score"))->getCString();
+	std::string tempScore = StringUtils::format("%s: %d", scoreChn, score);
+	const char* scoreStr = tempScore.c_str();
 	scoreLabel = Label::create();
 	scoreLabel->setString(scoreStr);
+	scoreLabel->setSystemFontSize(25);
+	scoreLabel->setAnchorPoint(ccp(0, 0));
 	scoreLabel->setPosition(ccp(0, bestScoreLabel->getPositionY() - 5));
 	addChild(scoreLabel);
 
@@ -150,8 +156,10 @@ void PlayScene::collide(float dt)
 					enemy->death();
 				}
 				score += 10;
-				const char* scoreStr = StringUtils::format("%s: %d",
-					((String*)chnStr->objectForKey("score"))->getCString(), score).c_str();
+				chnStr = Dictionary::createWithContentsOfFile("res.xml");
+				const char* scoreChn = ((String*)chnStr->objectForKey("score"))->getCString();
+				std::string tempScore = StringUtils::format("%s: %d", scoreChn, score);
+				const char* scoreStr = tempScore.c_str();
 				scoreLabel->setString(scoreStr);
 			}
 		}

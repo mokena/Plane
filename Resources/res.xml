@@ -1,16 +1,12 @@
 ﻿<dict>  
 	<key>start_game</key>
 	<string>开始游戏</string>
-	
 	<key>suspend_game</key>
 	<string>暂停</string>
-	
 	<key>resume</key>
 	<string>回到游戏</string>
-	
 	<key>score</key>
 	<string>当前分数</string>
-	
 	<key>best_score</key>
-	<string>最高分数</string>
+	<string>最分数</string>
 </dict>  
